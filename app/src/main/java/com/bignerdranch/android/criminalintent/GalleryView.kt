@@ -36,7 +36,7 @@ class GalleryView : ActionBarActivity() {
         for (i in 0..10) {
             val createList = ImageTile()
             createList.setImage_title("hi")
-            createList.setImage_ID(i + 10000)
+            createList.setImage_ID(i+10000)
             theimage.add(createList)
         }
         return theimage
