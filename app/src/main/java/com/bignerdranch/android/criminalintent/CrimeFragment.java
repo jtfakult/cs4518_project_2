@@ -2,16 +2,19 @@ package com.bignerdranch.android.criminalintent;
 
 import android.app.Activity;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -48,6 +51,8 @@ public class CrimeFragment extends Fragment {
     private Button mSuspectButton;
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
+    
+    private Context context;
 
     public static CrimeFragment newInstance(UUID crimeId) {
         Bundle args = new Bundle();
@@ -64,6 +69,8 @@ public class CrimeFragment extends Fragment {
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
         mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        
+        context = this.getActivity().getApplicationContext();
     }
 
     @Override
@@ -139,6 +146,15 @@ public class CrimeFragment extends Fragment {
         mSuspectButton = (Button)v.findViewById(R.id.crime_suspect);
         mSuspectButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+				/*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+					pickContact.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoFileUri());
+				} else {
+					File file = new File(getPhotoFileUri().getPath());
+					Uri photoUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", file);
+					pickContact.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+				}*/
+				pickContact.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            	
                 startActivityForResult(pickContact, REQUEST_CONTACT);
             }
         });
@@ -161,13 +177,15 @@ public class CrimeFragment extends Fragment {
         mPhotoButton.setEnabled(canTakePhoto);
 
         if (canTakePhoto) {
-            Uri uri = Uri.fromFile(mPhotoFile);
+            //Uri uri = Uri.fromFile(mPhotoFile);
+			Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".my.package.name.provider", mPhotoFile);
             captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
 
         mPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+				captureImage.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 startActivityForResult(captureImage, REQUEST_PHOTO);
             }
         });
