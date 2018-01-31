@@ -42,6 +42,8 @@
         </activity>
         <activity android:name=".GalleryView">
         </activity>
+        <activity android:name=".Kotlin">
+        </activity>
     </application>
 
 </manifest>
