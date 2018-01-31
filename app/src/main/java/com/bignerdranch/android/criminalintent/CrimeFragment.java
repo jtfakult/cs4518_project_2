@@ -285,7 +285,41 @@ public class CrimeFragment extends Fragment {
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
                     mPhotoFile.getPath(), getActivity());
-            mPhotoView.setImageBitmap(bitmap);
+            faceDect(bitmap);
         }
     }
+
+    private void faceDect(Bitmap myBitmap){
+        Paint myRectPaint = new Paint();
+        myRectPaint.setStrokeWidth(5);
+        myRectPaint.setColor(Color.RED);
+        myRectPaint.setStyle(Paint.Style.STROKE);
+
+        Bitmap tempBitmap = Bitmap.createBitmap(myBitmap.getWidth(), myBitmap.getHeight(), Bitmap.Config.RGB_565);
+        Canvas tempCanvas = new Canvas(tempBitmap);
+        tempCanvas.drawBitmap(myBitmap, 0, 0, null);
+
+        FaceDetector faceDetector = new
+                FaceDetector.Builder(getActivity()).setTrackingEnabled(false)
+                .build();
+        if(!faceDetector.isOperational()){
+//            new AlertDialog.Builder(v.getContext()).setMessage("Could not set up the face detector!").show();
+            return;
+        }
+
+        Frame frame = new Frame.Builder().setBitmap(myBitmap).build();
+        SparseArray<Face> faces = faceDetector.detect(frame);
+
+        for(int i=0; i<faces.size(); i++) {
+            Face thisFace = faces.valueAt(i);
+            float x1 = thisFace.getPosition().x;
+            float y1 = thisFace.getPosition().y;
+            float x2 = x1 + thisFace.getWidth();
+            float y2 = y1 + thisFace.getHeight();
+            tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
+        }
+
+        mPhotoView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
+    }
+
 }
