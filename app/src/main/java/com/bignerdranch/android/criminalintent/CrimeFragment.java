@@ -146,13 +146,6 @@ public class CrimeFragment extends Fragment {
         mSuspectButton = (Button)v.findViewById(R.id.crime_suspect);
         mSuspectButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-				/*if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-					pickContact.putExtra(MediaStore.EXTRA_OUTPUT, getPhotoFileUri());
-				} else {
-					File file = new File(getPhotoFileUri().getPath());
-					Uri photoUri = FileProvider.getUriForFile(getApplicationContext(), getApplicationContext().getPackageName() + ".provider", file);
-					pickContact.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-				}*/
 				pickContact.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             	
                 startActivityForResult(pickContact, REQUEST_CONTACT);
@@ -178,7 +171,7 @@ public class CrimeFragment extends Fragment {
 
         if (canTakePhoto) {
             //Uri uri = Uri.fromFile(mPhotoFile);
-			Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".com.bignerdranch.android.criminalintent", mPhotoFile);
+			Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".my.package.name.provider", mPhotoFile);
             captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
 
