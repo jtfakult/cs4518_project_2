@@ -178,7 +178,7 @@ public class CrimeFragment extends Fragment {
 
         if (canTakePhoto) {
             //Uri uri = Uri.fromFile(mPhotoFile);
-			Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".my.package.name.provider", mPhotoFile);
+			Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".com.bignerdranch.android.criminalintent", mPhotoFile);
             captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         }
 
