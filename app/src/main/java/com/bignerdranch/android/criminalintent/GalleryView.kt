@@ -23,11 +23,11 @@ class GalleryView : ActionBarActivity() {
 
         val layoutManager = GridLayoutManager(applicationContext, 2)
         recyclerView.layoutManager = layoutManager
-        val createLists = prepareData(extras.getStringArrayList("images"))
+        val createLists = prepareData(extras.getBoolean("face_dect_on"), extras.getStringArrayList("images"))
         val adapter = GalleryAdapter(applicationContext, createLists)
         recyclerView.adapter = adapter
 
-        loadPhotos(extras.getBoolean("face_dect_on"))
+        loadPhotos(extras.getBoolean("face_dect_on"), extras.getStringArrayList("images"))
     }
 
     fun loadPhotos(face_dect_on: Boolean, images: ArrayList<String>)
