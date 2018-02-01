@@ -62,12 +62,15 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_PHOTO= 2;
+    private static boolean face_dect_on = false;
 
     private Crime mCrime;
     private File mPhotoFile;
     private EditText mTitleField;
     private Button mDateButton;
+    private CheckBox enable_face_detection;
     private CheckBox mSolvedCheckbox;
+    private Button display_gallery;
     private Button mReportButton;
     private Button mSuspectButton;
     private ImageButton mPhotoButton;
@@ -158,6 +161,25 @@ public class CrimeFragment extends Fragment {
                         getString(R.string.crime_report_subject));
                 i = Intent.createChooser(i, getString(R.string.send_report));
 
+                startActivity(i);
+            }
+        });
+
+        enable_face_detection = (CheckBox) v.findViewById(R.id.enable_face_detection);
+        enable_face_detection.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                face_dect_on = isChecked;
+            }
+        });
+
+        display_gallery = (Button)v.findViewById(R.id.display_gallery);
+        display_gallery.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                Bundle b = new Bundle();
+//                b.putStringArray(key, new String[]{value1, value2});
+                Intent i=new Intent(context, GalleryView.class);
+//                i.putExtras(b);
                 startActivity(i);
             }
         });
@@ -285,7 +307,11 @@ public class CrimeFragment extends Fragment {
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
                     mPhotoFile.getPath(), getActivity());
-            faceDect(bitmap);
+            if(face_dect_on) {
+                faceDect(bitmap);
+            }else{
+                mPhotoView.setImageBitmap(bitmap);
+            }
         }
     }
 
