@@ -51,6 +51,7 @@ import com.google.android.gms.vision.face.FaceDetector;
 
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -62,7 +63,9 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_PHOTO= 2;
+
     private static boolean face_dect_on = false;
+    private static ArrayList<String> images;
 
     private Crime mCrime;
     private File mPhotoFile;
@@ -109,6 +112,8 @@ public class CrimeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime, container, false);
+
+        images = new ArrayList<String>();
 
         mTitleField = (EditText) v.findViewById(R.id.crime_title);
         mTitleField.setText(mCrime.getTitle());
@@ -177,9 +182,10 @@ public class CrimeFragment extends Fragment {
         display_gallery.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Bundle b = new Bundle();
-//                b.putStringArray(key, new String[]{value1, value2});
+                b.putBoolean("face_dect_on", face_dect_on);
+                b.putStringArrayList("images", images);
                 Intent i=new Intent(context, GalleryView.class);
-//                i.putExtras(b);
+                i.putExtras(b);
                 startActivity(i);
             }
         });
@@ -307,6 +313,7 @@ public class CrimeFragment extends Fragment {
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(
                     mPhotoFile.getPath(), getActivity());
+            images.add(mPhotoFile.getPath());
             if(face_dect_on) {
                 faceDect(bitmap);
             }else{
@@ -315,7 +322,7 @@ public class CrimeFragment extends Fragment {
         }
     }
 
-    private void faceDect(Bitmap myBitmap){
+    public void faceDect(Bitmap myBitmap){
         Paint myRectPaint = new Paint();
         myRectPaint.setStrokeWidth(5);
         myRectPaint.setColor(Color.RED);
