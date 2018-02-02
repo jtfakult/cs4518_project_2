@@ -1,5 +1,6 @@
 package com.bignerdranch.android.criminalintent;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ public class Crime {
     private Date mDate;
     private boolean mSolved;
     private String mSuspect;
+    private ArrayList<String> mPhotos;
 
     public Crime() {
         this(UUID.randomUUID());
@@ -18,6 +20,7 @@ public class Crime {
     public Crime(UUID id) {
         mId = id;
         mDate = new Date();
+        mPhotos = new ArrayList<String>();
     }
     public UUID getId() {
         return mId;
@@ -58,4 +61,20 @@ public class Crime {
     public String getPhotoFilename() {
         return "IMG_" + getId().toString() + ".jpg";
     }
+    
+    public boolean addPhoto(String photoURI)
+	{
+		if (mPhotos.contains(photoURI))
+		{
+			return false;
+		}
+		mPhotos.add(photoURI);
+		
+		return true;
+	}
+	
+	public ArrayList<String> getPhotos()
+	{
+		return mPhotos;
+	}
 }
