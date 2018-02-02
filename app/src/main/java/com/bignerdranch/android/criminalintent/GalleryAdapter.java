@@ -31,7 +31,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 	
 	@Override
 	public void onBindViewHolder(GalleryAdapter.ViewHolder viewHolder, int i) {
-		((TextView) viewHolder.title).setText(galleryList.get(i).getImage_title());
+		//((TextView) viewHolder.title).setText(galleryList.get(i).getImage_title());
 		viewHolder.img.setScaleType(ImageView.ScaleType.CENTER_CROP);
 		viewHolder.img.setImageDrawable(galleryList.get(i).getImage_draw());
 	}
@@ -47,7 +47,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.ViewHold
 		public ViewHolder(View view) {
 			super(view);
 			
-			title = (TextView)view.findViewById(R.id.title);
+			//title = (TextView)view.findViewById(R.id.title);
 			img = (ImageView) view.findViewById(R.id.img);
 		}
 	}
