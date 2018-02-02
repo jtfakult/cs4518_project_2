@@ -56,7 +56,7 @@ public class Crime {
     }
 
     public void addPath(String path){
-        this.mPath += (", " + path);
+        this.mPath += (path + ", ");
     }
 
     public String getPath(){
