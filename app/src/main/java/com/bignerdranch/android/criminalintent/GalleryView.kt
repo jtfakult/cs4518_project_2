@@ -44,11 +44,11 @@ class GalleryView : ActionBarActivity() {
             createList.setImage_ID(i+10000)
 
             val bitmap = PictureUtils.getScaledBitmap(
-                    images[i], getActivity())
+                    images[i], this)
             if (face_dect_on) {
                 faceDect(bitmap, createList)
             } else {
-                createList.setImageBitmap(bitmap)
+                createList.setImage_draw(BitmapDrawable(resources, bitmap))
             }
 
             theimage.add(createList)
@@ -66,7 +66,7 @@ class GalleryView : ActionBarActivity() {
         val tempCanvas = Canvas(tempBitmap)
         tempCanvas.drawBitmap(myBitmap, 0f, 0f, null)
 
-        val faceDetector = FaceDetector.Builder(getActivity()).setTrackingEnabled(false)
+        val faceDetector = FaceDetector.Builder(this).setTrackingEnabled(false)
                 .build()
         if (!faceDetector.isOperational) {
             //            new AlertDialog.Builder(v.getContext()).setMessage("Could not set up the face detector!").show();
@@ -85,6 +85,6 @@ class GalleryView : ActionBarActivity() {
             tempCanvas.drawRoundRect(RectF(x1, y1, x2, y2), 2f, 2f, myRectPaint)
         }
 
-        thisImage.setImageDrawable(BitmapDrawable(resources, tempBitmap))
+        thisImage.setImage_draw(BitmapDrawable(resources, tempBitmap))
     }
 }
