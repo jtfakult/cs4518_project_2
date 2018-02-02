@@ -21,7 +21,7 @@ class GalleryView : ActionBarActivity() {
         val recyclerView = imageGallery as RecyclerView
         recyclerView.setHasFixedSize(true)
 
-        val layoutManager = GridLayoutManager(applicationContext, 2)
+        val layoutManager = GridLayoutManager(applicationContext, 4)
         recyclerView.layoutManager = layoutManager
         val createLists = prepareData(extras.getBoolean("face_dect_on"), extras.getStringArrayList("images"))
         val adapter = GalleryAdapter(applicationContext, createLists)
