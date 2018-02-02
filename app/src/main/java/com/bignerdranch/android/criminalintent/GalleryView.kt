@@ -53,7 +53,14 @@ class GalleryView : ActionBarActivity() {
             val bitmap = PictureUtils.getScaledBitmap(
                     filePath, this)
             if (face_dect_on) {
-                faceDect(bitmap, createList)
+                var bd: BitmapDrawable? = faceDect(bitmap, createList)
+                if (bd == null)
+                {
+                    Log.e("Google Vision", "Google vision not working")
+                }
+                else {
+                    createList.setImage_draw(bd)
+                }
             } else {
                 createList.setImage_draw(BitmapDrawable(resources, bitmap))
             }
@@ -63,7 +70,7 @@ class GalleryView : ActionBarActivity() {
         return theimage
     }
 
-    fun faceDect(myBitmap: Bitmap, thisImage: ImageTile) {
+    fun faceDect(myBitmap: Bitmap, thisImage: ImageTile): BitmapDrawable? {
         val myRectPaint = Paint()
         myRectPaint.strokeWidth = 5f
         myRectPaint.color = Color.RED
@@ -77,7 +84,7 @@ class GalleryView : ActionBarActivity() {
                 .build()
         if (!faceDetector.isOperational) {
             //            new AlertDialog.Builder(v.getContext()).setMessage("Could not set up the face detector!").show();
-            return
+            return null;
         }
 
         val frame = Frame.Builder().setBitmap(myBitmap).build()
@@ -92,6 +99,7 @@ class GalleryView : ActionBarActivity() {
             tempCanvas.drawRoundRect(RectF(x1, y1, x2, y2), 2f, 2f, myRectPaint)
         }
 
-        thisImage.setImage_draw(BitmapDrawable(resources, tempBitmap))
+        //thisImage.setImage_draw(BitmapDrawable(resources, tempBitmap))
+        return BitmapDrawable(resources, tempBitmap);
     }
 }

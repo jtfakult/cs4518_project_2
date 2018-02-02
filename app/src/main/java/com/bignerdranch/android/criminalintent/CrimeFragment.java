@@ -407,15 +407,17 @@ public class CrimeFragment extends Fragment {
 			String fileName = mCrime.getPhotoFilename();
             mCrime.addPhoto(fileName); //Removed duplicates
 			Log.d("AllPhotos", TextUtils.join(" ", mCrime.getPhotos()));
-            if(face_dect_on) {
-                faceDect(bitmap);
+            if(face_dect_on)
+            {
+				mPhotoView.setImageDrawable(faceDect(bitmap));
+            
             }else {
                 mPhotoView.setImageBitmap(bitmap);
             }
         }
     }
 
-    public void faceDect(Bitmap myBitmap){
+    public BitmapDrawable faceDect(Bitmap myBitmap) {
         Paint myRectPaint = new Paint();
         myRectPaint.setStrokeWidth(5);
         myRectPaint.setColor(Color.RED);
@@ -430,7 +432,7 @@ public class CrimeFragment extends Fragment {
                 .build();
         if(!faceDetector.isOperational()){
 //            new AlertDialog.Builder(v.getContext()).setMessage("Could not set up the face detector!").show();
-            return;
+            return null;
         }
 
         Frame frame = new Frame.Builder().setBitmap(myBitmap).build();
@@ -445,7 +447,8 @@ public class CrimeFragment extends Fragment {
             tempCanvas.drawRoundRect(new RectF(x1, y1, x2, y2), 2, 2, myRectPaint);
         }
 
-        mPhotoView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
+        //mPhotoView.setImageDrawable(new BitmapDrawable(getResources(),tempBitmap));
+		return new BitmapDrawable(getResources(),tempBitmap);
     }
 
 }
