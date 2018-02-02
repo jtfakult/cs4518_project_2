@@ -183,7 +183,7 @@ public class CrimeFragment extends Fragment {
             public void onClick(View v) {
                 Bundle b = new Bundle();
                 b.putBoolean("face_dect_on", face_dect_on);
-                b.putStringArrayList("images", images);
+                b.putStringArrayList("images", mCrime.getPhotos()); //images
                 Intent i=new Intent(context, GalleryView.class);
                 i.putExtras(b);
                 startActivity(i);
@@ -311,12 +311,12 @@ public class CrimeFragment extends Fragment {
         if (mPhotoFile == null || !mPhotoFile.exists()) {
             mPhotoView.setImageDrawable(null);
         } else {
-            Bitmap bitmap = PictureUtils.getScaledBitmap(
-                    mPhotoFile.getPath(), getActivity());
-            images.add(mPhotoFile.getPath());
+            Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
+            //images.add(mPhotoFile.getPath());
+            mCrime.addPhoto(mPhotoFile.getPath()); //Removed duplicates
             if(face_dect_on) {
                 faceDect(bitmap);
-            }else{
+            }else {
                 mPhotoView.setImageBitmap(bitmap);
             }
         }
