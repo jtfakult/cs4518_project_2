@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
+import android.text.TextUtils;
 
 import com.bignerdranch.android.criminalintent.database.CrimeBaseHelper;
 import com.bignerdranch.android.criminalintent.database.CrimeCursorWrapper;
@@ -31,14 +32,13 @@ public class CrimeLab {
 
     private CrimeLab(Context context) {
         mContext = context.getApplicationContext();
-        mDatabase = new CrimeBaseHelper(mContext)
-                .getWritableDatabase();
+        mDatabase = new CrimeBaseHelper(mContext).getWritableDatabase();
     }
 
 
     public void addCrime(Crime c) {
         ContentValues values = getContentValues(c);
-
+		
         mDatabase.insert(CrimeTable.NAME, null, values);
     }
 
@@ -102,6 +102,7 @@ public class CrimeLab {
         values.put(CrimeTable.Cols.DATE, crime.getDate().getTime());
         values.put(CrimeTable.Cols.SOLVED, crime.isSolved() ? 1 : 0);
         values.put(CrimeTable.Cols.SUSPECT, crime.getSuspect());
+        values.put(CrimeTable.Cols.PHOTOS, TextUtils.join(",", crime.getPhotos().toArray()));
 
         return values;
     }

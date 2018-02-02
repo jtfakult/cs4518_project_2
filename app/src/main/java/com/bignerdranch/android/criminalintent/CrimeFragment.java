@@ -21,6 +21,7 @@ import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,7 +96,7 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
-        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        mPhotoFile = new File(mCrime.getPhotos().get(mCrime.getPhotos().size())); //CrimeLab.get(getActivity()).getPhotoFile(mCrime);
         
         context = this.getActivity().getApplicationContext();
     }
@@ -314,6 +315,7 @@ public class CrimeFragment extends Fragment {
             Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
             //images.add(mPhotoFile.getPath());
             mCrime.addPhoto(mPhotoFile.getPath()); //Removed duplicates
+			//Log.d("Crime boy", )
             if(face_dect_on) {
                 faceDect(bitmap);
             }else {
