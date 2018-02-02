@@ -12,6 +12,7 @@ public class Crime {
     private boolean mSolved;
     private String mSuspect;
     private ArrayList<String> mPhotos;
+    private String mPath;
 
     public Crime() {
         this(UUID.randomUUID());
@@ -48,6 +49,18 @@ public class Crime {
 
     public void setSolved(boolean solved) {
         mSolved = solved;
+    }
+
+    public void setPath(String path){
+        this.mPath = path;
+    }
+
+    public void addPath(String path){
+        this.mPath += (", " + path);
+    }
+
+    public String getPath(){
+        return mPath;
     }
 
     public String getSuspect() {
