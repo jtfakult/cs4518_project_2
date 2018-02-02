@@ -1,5 +1,7 @@
 package com.bignerdranch.android.criminalintent;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.UUID;
@@ -72,15 +74,17 @@ public class Crime {
     }
 
     public String getPhotoFilename() {
-        return "IMG_" + getId().toString() + ".jpg";
+        return "IMG_" + getId().toString() + "_" + mPhotos.size() + ".jpg";
     }
     
     public boolean addPhoto(String photoURI)
 	{
+		Log.d("Phototer", photoURI);
 		if (mPhotos.contains(photoURI))
 		{
 			return false;
 		}
+		Log.d("Phototer", "Made it");
 		mPhotos.add(photoURI);
 		
 		return true;

@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.bignerdranch.android.criminalintent.database.CrimeBaseHelper;
 import com.bignerdranch.android.criminalintent.database.CrimeCursorWrapper;
@@ -76,6 +77,8 @@ public class CrimeLab {
     }
 
     public File getPhotoFile(Crime crime) {
+    	
+    	Log.d("Photofilename", crime.getPhotoFilename());
         File externalFilesDir = mContext
                 .getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 

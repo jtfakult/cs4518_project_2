@@ -13,12 +13,14 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.FileProvider;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -46,6 +48,8 @@ import android.util.SparseArray;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.face.Face;
 import com.google.android.gms.vision.face.FaceDetector;
@@ -80,6 +84,8 @@ public class CrimeFragment extends Fragment {
     private ImageButton mPhotoButton;
     private ImageView mPhotoView;
     
+    private Intent captureImage;
+    
     private Context context;
 
     public static CrimeFragment newInstance(UUID crimeId) {
@@ -96,7 +102,16 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         UUID crimeId = (UUID) getArguments().getSerializable(ARG_CRIME_ID);
         mCrime = CrimeLab.get(getActivity()).getCrime(crimeId);
-        mPhotoFile = new File(mCrime.getPhotos().get(mCrime.getPhotos().size())); //CrimeLab.get(getActivity()).getPhotoFile(mCrime);
+        String[] paths = mCrime.getPath().split(",");
+        for (String p : paths)
+		{
+			if (p.length() < 1)
+			{
+				continue;
+			}
+			mCrime.addPhoto(p.trim());
+		}
+        mPhotoFile = CrimeLab.get(getActivity()).getPhotoFile(mCrime);
         
         context = this.getActivity().getApplicationContext();
     }
@@ -184,10 +199,22 @@ public class CrimeFragment extends Fragment {
             public void onClick(View v) {
                 Bundle b = new Bundle();
                 b.putBoolean("face_dect_on", face_dect_on);
+				Log.d("mphotos2", TextUtils.join(" ", mCrime.getPhotos()));
                 b.putStringArrayList("images", mCrime.getPhotos()); //images
-                Intent i=new Intent(context, GalleryView.class);
-                i.putExtras(b);
-                startActivity(i);
+	
+				int numPhotos = mCrime.getPhotos().size();
+				Log.d("Numphotos", numPhotos+"");
+				if (numPhotos > 1)
+				{
+					Intent i=new Intent(context, GalleryView.class);
+					i.putExtras(b);
+					startActivity(i);
+				}
+				else
+				{
+					Toast toast = Toast.makeText(context, "You can view the gallery once more than 1 image exists.\nCurrently: " + numPhotos + " photos exists", Toast.LENGTH_LONG);
+					toast.show();
+				}
             }
         });
 
@@ -213,23 +240,55 @@ public class CrimeFragment extends Fragment {
         }
 
         mPhotoButton = (ImageButton) v.findViewById(R.id.crime_camera);
-        final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         boolean canTakePhoto = mPhotoFile != null &&
                 captureImage.resolveActivity(packageManager) != null;
         mPhotoButton.setEnabled(canTakePhoto);
 
         if (canTakePhoto) {
-            //Uri uri = Uri.fromFile(mPhotoFile);
-			Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".my.package.name.provider", mPhotoFile);
-            captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+			File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+			
+			if (externalFilesDir != null)
+			{
+				mPhotoFile = new File(externalFilesDir, mCrime.getPhotoFilename());
+				Log.d("Photofile", mPhotoFile.getPath());
+				//Uri uri = Uri.fromFile(mPhotoFile);
+				Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".my.package.name.provider", mPhotoFile);
+				captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+			}
         }
 
         mPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+				captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+	
+				File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+	
+				if (externalFilesDir != null)
+				{
+					String filePath = mCrime.getPhotoFilename();
+					/*if (mCrime.getPhotos().size() > 0)
+					{
+						filePath = mCrime.getPhotos().get(0);
+					}*/
+					
+					mPhotoFile = new File(externalFilesDir, filePath);
+					
+					/*if (!mPhotoFile.exists())
+					{
+						Log.d("bdsajk", "fdshjkfhasj");
+						mPhotoFile = new File(externalFilesDir, mCrime.getPhotos().get(0));
+					}*/
+					Log.d("Photofile", mPhotoFile.getPath());
+					//Uri uri = Uri.fromFile(mPhotoFile);
+					Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".my.package.name.provider", mPhotoFile);
+					captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+				}
+				
 				captureImage.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivityForResult(captureImage, REQUEST_PHOTO);
+				startActivityForResult(captureImage, REQUEST_PHOTO);
             }
         });
 
@@ -309,13 +368,45 @@ public class CrimeFragment extends Fragment {
     }
 
     private void updatePhotoView() {
+		File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+	
+		if (externalFilesDir != null)
+		{
+			mPhotoFile = new File(externalFilesDir, mCrime.getPhotoFilename());
+			//Uri uri = Uri.fromFile(mPhotoFile);
+			Uri uri = FileProvider.getUriForFile(context, context.getApplicationContext().getPackageName() + ".my.package.name.provider", mPhotoFile);
+			captureImage.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+		}
+	
+		File[] files = externalFilesDir.listFiles();
+		for (int i = 0; i < files.length; i++)
+		{
+			Log.d("Files", "FileName:" + files[i].getName());
+		}
+	
+		if (externalFilesDir == null) {
+			return;
+		}
+		
+    	mPhotoFile = new File(externalFilesDir, mCrime.getPhotoFilename());
+		if (!mPhotoFile.exists())
+		{
+			try
+			{
+				mPhotoFile = new File(externalFilesDir, mCrime.getPhotos().get(0));
+			}
+			catch (Exception e){}
+		}
+		
         if (mPhotoFile == null || !mPhotoFile.exists()) {
+        	Log.e("Null", "null" + mPhotoFile.getPath());
             mPhotoView.setImageDrawable(null);
         } else {
             Bitmap bitmap = PictureUtils.getScaledBitmap(mPhotoFile.getPath(), getActivity());
             //images.add(mPhotoFile.getPath());
-            mCrime.addPhoto(mPhotoFile.getPath()); //Removed duplicates
-			//Log.d("Crime boy", )
+			String fileName = mCrime.getPhotoFilename();
+            mCrime.addPhoto(fileName); //Removed duplicates
+			Log.d("AllPhotos", TextUtils.join(" ", mCrime.getPhotos()));
             if(face_dect_on) {
                 faceDect(bitmap);
             }else {
